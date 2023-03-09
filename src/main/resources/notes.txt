@@ -1,3 +1,44 @@
 C:\Users\ACER\.m2\repository\org\webjars\bootstrap\5.1.3\bootstrap-5.1.3.jar!\META-INF\resources\webjars\bootstrap\5.1.3\css\bootstrap.min.css
 C:\Users\ACER\.m2\repository\org\webjars\bootstrap\5.1.3\bootstrap-5.1.3.jar!\META-INF\resources\webjars\bootstrap\5.1.3\js\bootstrap.min.js
 C:\Users\ACER\.m2\repository\org\webjars\jquery\3.6.0\jquery-3.6.0.jar!\META-INF\resources\webjars\jquery\3.6.0\jquery.min.js
+
+
+Deleted AuthenticationService class which we used for login page , by getting username and password
+
+package com.example.mywebapp.login;
+
+
+import org.springframework.stereotype.Service;
+
+@Service // for business logic -- created this bean to autowire to constructor of loginController
+public class AuthenticationService {
+    public boolean authenticate(String userName, String password){ // method to authenticate username and password
+        boolean isValidUserName = userName.equalsIgnoreCase("Amritpal Singh");
+        boolean isValidPassword = password.equalsIgnoreCase("Khehra");
+
+        return isValidUserName&& isValidPassword; // returns true if both are same , else false
+    }
+}
+
+Deleted loginControl.jsp file
+
+<html>
+<head>
+    <link href  ="webjars\bootstrap\5.1.3\css\bootstrap.min.css" rel = "stylesheet">
+    <title>Login Controller Web page</title>
+</head>
+<body>
+<div class="container">
+    <h1>Login</h1>
+    <pre>${errorMessage}</pre> <!-- displaying the message before going back to login page-->
+    <form method="post">
+        Name: <input type="text" name="name">
+        Password: <input type="password" name="password">
+        <input type="submit">
+    </form>
+</div>
+<script src = "webjars\bootstrap\5.1.3\js\bootstrap.min.js"></script>
+<script src = "webjars\jquery\3.6.0\jquery.min.js"></script>
+
+</body>
+</html>

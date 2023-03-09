@@ -3,17 +3,19 @@ package com.example.mywebapp.login;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 
 @Controller
 @SessionAttributes("name")
-public class LoginControllerApplication {
+public class WelcomeControllerApplication {
 
     //private Logger logger = LoggerFactory.getLogger(getClass());
 //    @RequestMapping("login")
@@ -31,17 +33,31 @@ public class LoginControllerApplication {
 //        return "loginControl";
 //    }
 
+    /*
+    // not needed because of the spring security
     private AuthenticationService authenticationService; // for authentication purpose of username and password
 
     public LoginControllerApplication(AuthenticationService authenticationService){
         this.authenticationService = authenticationService;
     }
 
-    @RequestMapping(value = "login",method = RequestMethod.GET)
-    public String goToLoginPage(){
-        return "loginControl";
+     */
+
+    @RequestMapping(value = "/",method = RequestMethod.GET)
+    public String goToWelcomePage(ModelMap model){
+        model.put("name",getLoggedInUserName());
+        return "welcome";
     }
 
+    // for removing hardcoded value of username
+    public String getLoggedInUserName(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
+
+    /*
+    // not needed anymore because of the spring security
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public String goToWelcomePage(@RequestParam String name, @RequestParam String password, ModelMap model){
         if(authenticationService.authenticate(name,password)) { // if name and password matches , then return welcome page
@@ -54,6 +70,8 @@ public class LoginControllerApplication {
                 " Try again!");
         return "loginControl"; // if it does not match return loginControl page
     }
+
+     */
 
 
 }

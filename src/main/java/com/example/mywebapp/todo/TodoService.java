@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-
 @Service
 public class TodoService {
     private static List<Todo> todos = new ArrayList<>();
@@ -21,8 +20,9 @@ public class TodoService {
         todos.add(new Todo(++todosCount,"Balwinder Kaur","Learn AWS", LocalDate.now().plusYears(3),false));
     }
 
-    public List<Todo>findByUsername(String userName){ // finding the list of todo using provided username
-        return todos;
+    public List<Todo>findByUsername(String username){ // finding the list of todo using provided username
+        Predicate<? super Todo> predicate = todo -> todo.getUserName().equalsIgnoreCase(username);
+        return todos.stream().filter(predicate).toList();
     }
 
     public void addTodos(String userName,String description,LocalDate targetDate,boolean done){

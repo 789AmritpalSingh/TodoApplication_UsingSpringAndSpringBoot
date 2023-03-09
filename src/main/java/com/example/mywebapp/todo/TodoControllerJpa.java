@@ -9,16 +9,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
 
-//@Controller --> using it as backup , disabled it because to retrieve data from the database
-public class TodoController {
+@Controller
+@SessionAttributes("name")
+public class TodoControllerJpa {
     private TodoService todoService;
+    private TodoRepository todoRepository;
 
-    public TodoController(TodoService todoService) {
+    public TodoControllerJpa(TodoService todoService,TodoRepository todoRepository) {
         this.todoService = todoService;
+        this.todoRepository = todoRepository;
     }
 
     @RequestMapping("list-todos")
@@ -27,7 +31,7 @@ public class TodoController {
         // we are not using model.get("name") for String userName because its taking value from @Session Attribute from WelcomeController
 
         String userName = getLoggedInUserName(model);
-        List<Todo> todos = todoService.findByUsername(userName);
+        List<Todo> todos = todoRepository.findByUserName(userName);
 
         model.addAttribute("todos", todos);
 
@@ -42,17 +46,6 @@ public class TodoController {
         return "addTodos";
     }
 
-
-    /*
-    @RequestMapping(value = "add-todo", method = RequestMethod.POST)
-    public String addNewTodoPage(@RequestParam String description, ModelMap model){
-        String userName = (String) model.get("name"); // get the name of user who has logged in
-        todoService.addTodos(userName,description, LocalDate.now().plusYears(1),false);
-        return "redirect:list-todos"; // redirecting addNewTodoPage back to listAllTodos page
-    }
-
-     */
-
     @RequestMapping(value = "add-todo", method = RequestMethod.POST)
     public String addNewTodoPage(ModelMap model, @Valid Todo todo, BindingResult result) { // binding directly to todo bean
         if(result.hasErrors()){
@@ -60,7 +53,9 @@ public class TodoController {
         }
         //String userName = (String) model.get("name"); // get the name of user who has logged in
         String userName = getLoggedInUserName(model);
-        todoService.addTodos(userName, todo.getDescription(), todo.getTargetDate(), false);
+        todo.setUserName(userName);
+        todoRepository.save(todo);
+        //todoService.addTodos(userName, todo.getDescription(), todo.getTargetDate(), false);
         return "redirect:list-todos"; // redirecting addNewTodoPage back to listAllTodos page
     }
 
@@ -68,7 +63,7 @@ public class TodoController {
     @RequestMapping(value = "delete-todo")
     public String deleteTodo(@RequestParam int id){
         // Delete Todo
-        todoService.deleteById(id);
+        todoRepository.deleteById(id);
 
         return "redirect:list-todos"; // go back to list-todos jsp page after deleting todos
     }
@@ -76,7 +71,7 @@ public class TodoController {
     @RequestMapping(value = "update-todo",method = RequestMethod.GET)
     public String showUpdateTodoPage(@RequestParam int id, ModelMap model) { // showing update todo page
         //Update Todo
-        Todo todo = todoService.findById(id);
+        Todo todo = todoRepository.findById(id).get();
         model.addAttribute("todo",todo);
         return "addTodos";
     }
@@ -88,7 +83,7 @@ public class TodoController {
         }
         String userName = getLoggedInUserName(model);
         todo.setUserName(userName); // adding userName to todo list , target date is pending , we will do that in next step
-        todoService.updateTodo(todo);
+        todoRepository.save(todo);
         return "redirect:list-todos";
 
     }
